@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart'; // import './myapp.dart'; // Myappが別のファイル内にある場合
 import 'package:flutter/cupertino.dart'; //iOS風のUIを再現するWidget群(今回は未使用)
-import 'pages/itemlist.dart';
-import 'pages/additems.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'BottomNavigationBar.dart';
 
 // mainメソッドがエントリポイント
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp()); //runAPP(): 最初に展開するウィジェットを選択. これがないとただのdartファイルになる
 }
 
@@ -35,58 +42,107 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const BottomNaviBar(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-// StatefulWidgetは単体では意味がない. 
-//State<T> クラスを別に実装し, statefulWidgetに結びつける必要がある.
-//それをやってるのが createState()
-//State<T>(状態)を保持するクラスと連携して動作するのがStatefulWidget
-class BottomNaviBar extends StatefulWidget {
-  const BottomNaviBar({super.key, required this.title});
-
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  State<BottomNaviBar> createState() => _BottomNaviBarState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _BottomNaviBarState extends State<BottomNaviBar> {
-  int _selectedIndex = 0;
-  static const _pages = [
-    AddItemPage(),
-    ItemListPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  // 入力したメールアドレス・パスワード
+  String _email = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('BottomNavigationBar Sample'),
-      // ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.post_add),
-            label: '入力',
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // 1行目 メールアドレス入力用テキストフィールド
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'メールアドレス'),
+                onChanged: (String value) {
+                  setState(() {
+                    _email = value;
+                  });
+                },
+              ),
+              // 2行目 パスワード入力用テキストフィールド
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'パスワード'),
+                obscureText: true,
+                onChanged: (String value) {
+                  setState(() {
+                    _password = value;
+                  });
+                },
+              ),
+              // 3行目 ユーザ登録ボタン
+              ElevatedButton(
+                child: const Text('ユーザ登録'),
+                onPressed: () async {
+                  try {
+                    final User? user = (await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                                email: _email, password: _password))
+                        .user;
+                    if (user != null)
+                      print("ユーザ登録しました ${user.email} , ${user.uid}");
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+              ),
+              // 4行目 ログインボタン
+              ElevatedButton(
+                child: const Text('ログイン'),
+                onPressed: () async {
+                  try {
+                    // メール/パスワードでログイン
+                    final User? user = (await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: _email, password: _password))
+                        .user;
+                    if (user != null){
+                      print("ログインしました　${user.email} , ${user.uid}");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyBottomNavigationBar(uid: user.uid),
+                          ),
+                        );
+                    };
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+              ),
+              // 5行目 パスワードリセット登録ボタン
+              ElevatedButton(
+                  child: const Text('パスワードリセット'),
+                  onPressed: () async {
+                    try {
+                      await FirebaseAuth.instance
+                          .sendPasswordResetEmail(email: _email);
+                      print("パスワードリセット用のメールを送信しました");
+                    } catch (e) {
+                      print(e);
+                    }
+                  }),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: '一覧',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color.fromARGB(255, 105, 124, 234),
-        onTap: _onItemTapped,
+        ),
       ),
     );
   }

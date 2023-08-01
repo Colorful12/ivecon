@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1026156429605",
+    "project_id": "ivecon-f9b6f",
+    "storage_bucket": "ivecon-f9b6f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026156429605:android:568419352793bfac4c1acc",
+        "android_client_info": {
+          "package_name": "com.example.ivecon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1026156429605-p0aaj1de3ci37bfllp5cj25ooiaje3qa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJ2rbWIgyMnLyfg6miczb7-vPjI4yeStQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1026156429605-p0aaj1de3ci37bfllp5cj25ooiaje3qa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
