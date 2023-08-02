@@ -2,6 +2,7 @@ import 'package:flutter/material.dart'; // import './myapp.dart'; // Myappが別
 import 'package:flutter/cupertino.dart'; //iOS風のUIを再現するWidget群(今回は未使用)
 import 'pages/itemlist.dart';
 import 'pages/additems.dart';
+import 'pages/addoneitem.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({Key? key, required this.uid}): super(key: key);
@@ -11,7 +12,13 @@ class MyBottomNavigationBar extends StatelessWidget {
     
     return MaterialApp(
       title: 'Flutter Demo',
-      home:  BottomNaviBar(uid: uid),
+      // home:  BottomNaviBar(uid: uid),
+      initialRoute: '/', // ホーム画面のルート名を指定
+      routes: {
+        '/': (context) => BottomNaviBar(uid: uid),
+        '/addoneitem': (context) => AddOneItemPage(uid: uid),
+        '/itemlist': (context) => ItemListPage(uid: uid),
+      },
     );
   }
 }
@@ -26,10 +33,17 @@ class BottomNaviBar extends StatefulWidget {
 
 class _BottomNaviBarState extends State<BottomNaviBar> {
   int _selectedIndex = 0;
-  static const _pages = [
-    AddItemPage(),
-    ItemListPage(),
-  ];
+
+  List<Widget> _pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      AddItemPage(uid: widget.uid),
+      ItemListPage(uid: widget.uid),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

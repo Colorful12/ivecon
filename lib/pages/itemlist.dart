@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'addoneitem.dart';
 
 class ItemListPage extends StatelessWidget {
-  const ItemListPage({Key? key}) : super(key: key);
+  final String uid;
+  const ItemListPage({Key? key, required this.uid}) : super(key: key);
   @override
   Widget build(BuildContext context) {  
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddOneItemPage(uid: uid),
+              
+              ),
+            );
+        },
+        child: Icon(Icons.add),
+      ),
       backgroundColor: Color.fromARGB(255, 241, 243, 245),
       body: Column(
         children: [

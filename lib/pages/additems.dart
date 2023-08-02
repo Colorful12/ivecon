@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AddItemPage extends StatelessWidget {
-  const AddItemPage({Key? key}) : super(key: key);
+  final String uid;
+  const AddItemPage({Key? key, required this.uid}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
