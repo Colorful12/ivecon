@@ -233,7 +233,7 @@ class _AddOneItemPageState extends State<AddOneItemPage>{
     
     final stockData = {
       'change': 0,
-      'new_stock': itemNumController.text,
+      'new_stock': int.parse(itemNumController.text),
       'reason' : '初期登録',
       'timestamp': FieldValue.serverTimestamp(),
     };

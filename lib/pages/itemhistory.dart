@@ -103,6 +103,43 @@ class _ItemHistoryState extends State<ItemHistory> {
     _fetchInitialStock();
   }
 
+
+  Widget _buildHistoryList(List<DocumentSnapshot> historyDocs) {
+    if (historyDocs == null || historyDocs.isEmpty) {
+      return Text('履歴はありません');
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: historyDocs.length,
+      itemBuilder: (context, index) {
+        var history = historyDocs[index];
+        int? change = history['change'];
+        int? newStock = history['new_stock'];
+        String? reason = history['reason'];
+        Timestamp? timestamp = history['timestamp'];
+        DateTime dateTime = timestamp?.toDate() ?? DateTime.now();
+
+        return Container(
+          height: 40,
+          margin: EdgeInsets.only(
+            left: 400,
+            right: 400,
+            top: 20,
+            bottom: 20,
+          ),
+          color : Colors.white,
+          child: Column(
+            children: [
+              Text('${dateTime.toLocal()}'),
+              Text('変動：${change ?? 0}, 在庫：${newStock ?? 0}, 理由：${reason ?? "不明"}')
+            ],
+         ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,86 +148,142 @@ class _ItemHistoryState extends State<ItemHistory> {
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          child: ListView( // ListViewで囲む
             children: [
-              Text('差分'),
-              SizedBox(height: 10),
-              TextField(
-                controller: _stockChangeController,
-                keyboardType: TextInputType.number,
+              Center(
+                child: Text('変動登録', style: TextStyle(fontSize: 20, color: Color(0xff2C2C2C)))  
               ),
+              _buildInputField('差分', _stockChangeController, TextInputType.number),
               SizedBox(height: 20),
-              Text('理由'), // 追加：理由のラベル
-              SizedBox(height: 10),
-              TextField(
-                controller: _reasonController,
-                keyboardType: TextInputType.text,
-              ),
+              _buildInputField('理由', _reasonController, TextInputType.text),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveStockChange,
-                style: ElevatedButton.styleFrom(
-                  primary: Color(0xffC5C7D3),
-                  onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 600), 
+                  child:ElevatedButton(
+                    onPressed: _saveStockChange,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      primary: Color(0xFFE65A71),
+                      onPrimary: Color(0xFFF7F7F7),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text('新規登録'),
                   ),
-                ),
-                child: Text('新規登録'),
-              ),
+               ),
+              SizedBox(height: 40),
+              Center(
+                child: Column(
+                  children: [
+                    Text('変動履歴', style: TextStyle(fontSize: 20, color: Color(0xff2C2C2C))),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _historyDocRef.collection('history')
+                        .orderBy('timestamp', descending: true)
+                        .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<DocumentSnapshot> historyDocs = snapshot.data!.docs;
+                          return _buildHistoryList(historyDocs);
+                        } else if (snapshot.hasError) {
+                          return Text('エラーが発生しました');
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                  ]
+                )
+              )
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EachItemPage(
-                      name: widget.name,
-                      category: widget.category,
-                      itemNum: widget.itemNum,
-                      memo: widget.memo,
-                      uid: widget.uid,
-                      itemId: widget.itemId,
-                    ),
+    bottomNavigationBar: Padding(
+      padding: EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EachItemPage(
+                    name: widget.name,
+                    category: widget.category,
+                    itemNum: widget.itemNum,
+                    memo: widget.memo,
+                    uid: widget.uid,
+                    itemId: widget.itemId,
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xffC5C7D3),
-                primary: Colors.white,
-                onPrimary: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
                 ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xffC5C7D3),
+              primary: Colors.white,
+              onPrimary: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Text('アイテム詳細'),
             ),
-            SizedBox(width: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xffC5C7D3),
-                primary: Colors.white,
-                onPrimary: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+            child: Text('アイテム詳細'),
+          ),
+          SizedBox(width: 20),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xffC5C7D3),
+              primary: Colors.white,
+              onPrimary: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Text('在庫変動'),
             ),
-          ],
-        ),
+            child: Text('在庫変動'),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildInputField(String labelText, TextEditingController controller, TextInputType keyboardType) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      SizedBox(height: 10),
+       Padding(
+          padding: EdgeInsets.symmetric(horizontal: 400), 
+          child:TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              labelText: labelText,
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.transparent),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.transparent),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Color.fromARGB(255, 105, 124, 234)),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            onChanged: (value) {
+              // setState(() {}); // onChangedの処理は必要ない場合はコメントアウトしても問題ありません
+            },
+          ),
+       )
+    ],
+  );
+}
 }
