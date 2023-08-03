@@ -40,8 +40,8 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
   void initState() {
     super.initState();
     _pages = [
-      AddItemPage(uid: widget.uid),
       ItemListPage(uid: widget.uid),
+      AddItemPage(uid: widget.uid),
     ];
   }
 
@@ -61,12 +61,12 @@ class _BottomNaviBarState extends State<BottomNaviBar> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.post_add),
-            label: '入力',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.grid_view),
             label: '一覧',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.post_add),
+            label: '入力',
           ),
         ],
         currentIndex: _selectedIndex,

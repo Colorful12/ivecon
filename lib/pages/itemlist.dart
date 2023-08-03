@@ -74,7 +74,7 @@ class ItemListPage extends StatelessWidget {
                       return InkWell(
                         onTap: () {
                           // アイテムの詳細ページに移動する処理をここに記述
-                          _navigateToEachItemPage(context, name, category, itemNum, memo);
+                          _navigateToEachItemPage(context, name, category, itemNum, memo, uid);
                           },
                           child: Container(
                             height: 200,
@@ -190,7 +190,7 @@ class ItemListPage extends StatelessWidget {
     );
   }
 
-  void _navigateToEachItemPage(BuildContext context, String name, String category, String itemNum, String memo) {
+  void _navigateToEachItemPage(BuildContext context, String name, String category, String itemNum, String memo, String uid) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -199,6 +199,7 @@ class ItemListPage extends StatelessWidget {
           category: category,
           itemNum: itemNum,
           memo: memo,
+          uid : uid,
         ),
       ),
     );
