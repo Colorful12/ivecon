@@ -234,6 +234,7 @@ class _AddOneItemPageState extends State<AddOneItemPage>{
     final stockData = {
       'change': 0,
       'new_stock': itemNumController.text,
+      'reason' : '初期登録',
       'timestamp': FieldValue.serverTimestamp(),
     };
     await itemRef.collection('history').add(stockData);

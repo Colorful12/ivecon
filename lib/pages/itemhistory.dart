@@ -25,6 +25,7 @@ class ItemHistory extends StatefulWidget {
 
 class _ItemHistoryState extends State<ItemHistory> {
   final TextEditingController _stockChangeController = TextEditingController();
+  final TextEditingController _reasonController = TextEditingController();
   int _currentStock = 0;
   late bool _isStockFetched;
   late final DocumentReference _historyDocRef;
@@ -45,6 +46,7 @@ class _ItemHistoryState extends State<ItemHistory> {
   @override
   void dispose() {
     _stockChangeController.dispose();
+    _reasonController.dispose();
     super.dispose();
   }
 
@@ -78,6 +80,7 @@ class _ItemHistoryState extends State<ItemHistory> {
     }
     int stockChange = int.parse(_stockChangeController.text);
     int newStock = _currentStock + stockChange;
+    String reason = _reasonController.text;
     print(newStock);
 
     // Firestoreに在庫の変動を保存する処理
@@ -85,6 +88,7 @@ class _ItemHistoryState extends State<ItemHistory> {
       'change': stockChange,
       'new_stock': newStock,
       'timestamp': FieldValue.serverTimestamp(),
+      'reason': reason,
     });
 
     FirebaseFirestore.instance
@@ -95,6 +99,7 @@ class _ItemHistoryState extends State<ItemHistory> {
       .update({'itemNum': newStock});
 
     _stockChangeController.clear();
+    _reasonController.clear();
     _fetchInitialStock();
   }
 
@@ -117,6 +122,13 @@ class _ItemHistoryState extends State<ItemHistory> {
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: 20),
+              Text('理由'), // 追加：理由のラベル
+              SizedBox(height: 10),
+              TextField(
+                controller: _reasonController,
+                keyboardType: TextInputType.text,
+              ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveStockChange,
                 style: ElevatedButton.styleFrom(
@@ -126,7 +138,7 @@ class _ItemHistoryState extends State<ItemHistory> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text('変動後の数を保存'),
+                child: Text('新規登録'),
               ),
             ],
           ),
