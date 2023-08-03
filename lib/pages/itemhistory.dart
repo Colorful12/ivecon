@@ -5,9 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ItemHistory extends StatefulWidget {
   final String name;
   final String category;
-  final String itemNum;
+  final int itemNum;
   final String memo;
   final String uid;
+  final String itemId;
 
   ItemHistory({
     required this.name,
@@ -15,6 +16,7 @@ class ItemHistory extends StatefulWidget {
     required this.itemNum,
     required this.memo,
     required this.uid,
+    required this.itemId,
   });
 
   @override
@@ -24,10 +26,19 @@ class ItemHistory extends StatefulWidget {
 class _ItemHistoryState extends State<ItemHistory> {
   final TextEditingController _stockChangeController = TextEditingController();
   int _currentStock = 0;
+  late bool _isStockFetched;
+  late final DocumentReference _historyDocRef;
 
   @override
   void initState() {
     super.initState();
+    _isStockFetched = false;
+    _historyDocRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.uid)
+      .collection('itemdetails')
+      .doc(widget.itemId);
+
     _fetchInitialStock();
   }
 
@@ -39,17 +50,17 @@ class _ItemHistoryState extends State<ItemHistory> {
 
   Future<void> _fetchInitialStock() async {
     try {
-      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.uid)
-          .collection('itemdetails')
-          .doc('stock')
-          .get();
-
-      if (docSnapshot.exists) {
-        // Firestoreから在庫のデータを取得して_currentStockに設定
-        _currentStock = docSnapshot['stock'] ?? 0;
-        setState(() {}); // データを取得した後に画面を更新する
+      QuerySnapshot querySnapshot = await _historyDocRef.collection('history')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+      print(querySnapshot.docs);
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot docSnapshot = querySnapshot.docs.first;
+        _currentStock = docSnapshot['new_stock'] ?? 0;
+        print(_currentStock);
+        _isStockFetched = true;
+        setState(() {});
       } else {
         // データが存在しない場合の処理
         // 初期在庫を0として設定するなど、適切な処理を行う
@@ -60,26 +71,31 @@ class _ItemHistoryState extends State<ItemHistory> {
   }
 
   void _saveStockChange() {
+    if (!_isStockFetched) {
+      // 在庫データがまだ取得されていない場合、保存を行わない
+      print('Stock data not fetched yet.');
+      return;
+    }
     int stockChange = int.parse(_stockChangeController.text);
     int newStock = _currentStock + stockChange;
     print(newStock);
 
-    // Firestoreに在庫の変動を保存する処理（省略しています）
-    // 例えば、Firestoreのコレクションにデータを追加する場合は以下のようにします
-    // FirebaseFirestore.instance
-    //   .collection('users')
-    //   .doc(widget.uid)
-    //   .collection('itemdetails')
-    //   .doc('history')
-    //   .collection('stock_changes')
-    //   .add({
-    //     'change': stockChange,
-    //     'new_stock': newStock,
-    //     'timestamp': FieldValue.serverTimestamp(),
-    //   });
+    // Firestoreに在庫の変動を保存する処理
+    _historyDocRef.collection('history').doc().set({
+      'change': stockChange,
+      'new_stock': newStock,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
 
-    // データの保存が成功した場合、戻る
-    Navigator.pop(context);
+    FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.uid)
+      .collection('itemdetails')
+      .doc(widget.itemId)
+      .update({'itemNum': newStock});
+
+    _stockChangeController.clear();
+    _fetchInitialStock();
   }
 
   @override
@@ -94,7 +110,7 @@ class _ItemHistoryState extends State<ItemHistory> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('在庫の差分を入力してください：'),
+              Text('差分'),
               SizedBox(height: 10),
               TextField(
                 controller: _stockChangeController,
@@ -132,6 +148,7 @@ class _ItemHistoryState extends State<ItemHistory> {
                       itemNum: widget.itemNum,
                       memo: widget.memo,
                       uid: widget.uid,
+                      itemId: widget.itemId,
                     ),
                   ),
                 );

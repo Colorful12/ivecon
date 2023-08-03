@@ -16,7 +16,7 @@ class AddOneItemPage extends StatefulWidget {
 
 class _AddOneItemPageState extends State<AddOneItemPage>{
   String category = '';
-  String itemNum = '';
+  int itemNum = 0;
   String memo = '';
   String name = '';
   String downloadURL = '';
@@ -219,17 +219,24 @@ class _AddOneItemPageState extends State<AddOneItemPage>{
   void saveDataToFirestore() async {
     final itemData = {
       'category': categoryController.text,
-      'itemNum': itemNumController.text,
+      'itemNum': int.parse(itemNumController.text),
       'memo': memoController.text,
       'name': nameController.text,
       'image_url': imageUrl,
     };
 
-    FirebaseFirestore.instance
+    DocumentReference itemRef = await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.uid)
         .collection('itemdetails')
         .add(itemData);
+    
+    final stockData = {
+      'change': 0,
+      'new_stock': itemNumController.text,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+    await itemRef.collection('history').add(stockData);
 
     setState(() {
       // 画像を選択した後、アップロードが完了したらフォームをリセットする

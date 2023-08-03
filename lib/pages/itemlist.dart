@@ -69,12 +69,13 @@ class ItemListPage extends StatelessWidget {
                       }
                       String name = data['name'] as String? ?? '';
                       String category = data['category'] as String? ?? '';
-                      String itemNum = data['itemNum'] as String? ?? '';
+                      int itemNum = data['itemNum'] as int? ?? 0;
                       String memo = data['memo'] as String? ?? '';
+                      String itemId = snapshot.data!.docs[index].id;
                       return InkWell(
                         onTap: () {
-                          // アイテムの詳細ページに移動する処理をここに記述
-                          _navigateToEachItemPage(context, name, category, itemNum, memo, uid);
+                          // アイテムの詳細ページに移動
+                          _navigateToEachItemPage(context, name, category, itemNum, memo, uid, itemId);
                           },
                           child: Container(
                             height: 200,
@@ -158,7 +159,7 @@ class ItemListPage extends StatelessWidget {
                                               child: Padding(
                                                 padding: EdgeInsets.fromLTRB(15,60,0,0),
                                                 child:Text(
-                                                  itemNum,
+                                                  itemNum.toString(),
                                                   style: TextStyle(
                                                     color: Color(0xFF2C2C2C),
                                                     fontSize: 24,
@@ -190,7 +191,7 @@ class ItemListPage extends StatelessWidget {
     );
   }
 
-  void _navigateToEachItemPage(BuildContext context, String name, String category, String itemNum, String memo, String uid) {
+  void _navigateToEachItemPage(BuildContext context, String name, String category, int itemNum, String memo, String uid, String itemId) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -200,6 +201,7 @@ class ItemListPage extends StatelessWidget {
           itemNum: itemNum,
           memo: memo,
           uid : uid,
+          itemId : itemId,
         ),
       ),
     );

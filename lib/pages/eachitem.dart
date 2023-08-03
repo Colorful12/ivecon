@@ -5,8 +5,9 @@ class EachItemPage extends StatefulWidget {
   final String uid; 
   final String name;
   final String category;
-  final String itemNum;
+  final int itemNum;
   final String memo;
+  final String itemId;
 
   EachItemPage({
     required this.name,
@@ -14,6 +15,7 @@ class EachItemPage extends StatefulWidget {
     required this.itemNum,
     required this.memo,
     required this.uid,
+    required this.itemId,
   });
 
   @override
@@ -35,7 +37,7 @@ class _EachItemPageState extends State<EachItemPage>{
             children: [
               _buildItemInfo('アイテム名', widget.name),
               _buildItemInfo('カテゴリ', widget.category),
-              _buildItemInfo('在庫数', widget.itemNum),
+              _buildItemInfo('在庫数', (widget.itemNum).toString()),
               _buildMemoInfo('メモ', widget.memo),
             ],
           ),
@@ -71,6 +73,7 @@ class _EachItemPageState extends State<EachItemPage>{
                       itemNum: widget.itemNum,
                       memo: widget.memo,
                       uid: widget.uid,
+                      itemId : widget.itemId,
                     ),
                   ),
                 );
