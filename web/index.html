@@ -41,6 +41,23 @@
 </head>
 <body>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        var app = firebase.app();
+        // Get a reference to the storage service, which is used to create references in your storage bucket
+        var storage = firebase.storage();
+        // Create a storage reference from our storage service
+        var storageRef = storage.ref();
+        document.getElementById('bucket').innerHTML = 'Bucket: ' + storageRef.bucket;
+        var imagesRef = storageRef.child('Cloud Storage.png');
+        document.getElementById('filename').innerHTML = 'File: ' + imagesRef.name;
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+  </script>
+  <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
@@ -57,6 +74,8 @@
   </script>
   <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-firestore.js"></script>
+  <script defer src="/__/firebase/5.3.1/firebase-storage.js"></script>
+  <script defer src="/__/firebase/init.js"></script>
   <script>
     var firebaseConfig = {
       apiKey: "AIzaSyDcI_7_hOfRhWGR6kC6Wta20ImCgk2j_qE",

@@ -16,8 +16,8 @@ class MyBottomNavigationBar extends StatelessWidget {
       initialRoute: '/', // ホーム画面のルート名を指定
       routes: {
         '/': (context) => BottomNaviBar(uid: uid),
-        '/addoneitem': (context) => AddOneItemPage(uid: uid),
-        '/itemlist': (context) => ItemListPage(uid: uid),
+        '/pages/addoneitem': (context) => AddOneItemPage(uid: uid),
+        '/pages/itemlist': (context) => ItemListPage(uid: uid),
       },
     );
   }
