@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'addoneitem.dart';
 import 'eachitem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ItemListPage extends StatelessWidget {
   final String uid;
@@ -10,7 +10,6 @@ class ItemListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {  
     return Scaffold(
-      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -20,6 +19,7 @@ class ItemListPage extends StatelessWidget {
               ),
             );
         },
+        backgroundColor: Color(0xffE65A71),
         child: Icon(Icons.add),
       ),
       backgroundColor: Color.fromARGB(255, 241, 243, 245),
@@ -87,16 +87,89 @@ class ItemListPage extends StatelessWidget {
                             color: Color.fromARGB(255, 255, 255, 255),
                             child: Row(
                               children: <Widget>[
-                                Container(
-                                  child: Text("画像"),
+                                FutureBuilder<String?>(
+                                  
+                                  future: _getImageUrlFromFirestore(data['image_url']), // 'image' : Firestoreに画像URLが格納されているフィールド
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return Text('画像の読み込みエラー');
+                                    } else {
+                                      String imageUrl = snapshot.data ?? '';
+                                      if (imageUrl.isEmpty) {
+                                        // 画像URLが空
+                                        return Container(
+                                          width: 150,
+                                          height: 150,
+                                          child: Padding(
+                                            padding: EdgeInsets.fromLTRB(10,20,10,20),
+                                            child: Container(
+                                              color: Colors.grey, 
+                                            ),
+                                          )
+                                        );
+                                      } else {
+                                        return Container(
+                                          width: 150,
+                                          height: 150,
+                                          child: Padding(
+                                            padding: EdgeInsets.fromLTRB(10,20,0,20),
+                                            child : Image.network(
+                                              imageUrl,
+                                            ),
+                                          )
+                                        );
+                                      }
+                                    }
+                                  },
                                 ),
                                 Container(
+                                  width: 186,
+                                  height: 176,
                                   child: Column(
                                     children: [
-                                      Text(name),
-                                      Text(category),
-                                      Text(itemNum),
-                                      Text(memo),
+                                      Padding(
+                                        padding: EdgeInsets.fromLTRB(0,30,0,0),
+                                        child: Text(
+                                          name,
+                                          style: TextStyle(
+                                            color: Color(0xFF2C2C2C),
+                                            fontSize: 18,
+                                          ),
+                                          textAlign: TextAlign.center
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(15,60,0,0),
+                                              child:Text(
+                                                "在庫",
+                                                style: TextStyle(
+                                                  color: Color(0xFF2C2C2C),
+                                                  fontSize: 22,
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 100,
+                                              child: Padding(
+                                                padding: EdgeInsets.fromLTRB(15,60,0,0),
+                                                child:Text(
+                                                  itemNum,
+                                                  style: TextStyle(
+                                                    color: Color(0xFF2C2C2C),
+                                                    fontSize: 24,
+                                                  ),
+                                                  textAlign: TextAlign.center
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
                                 )
@@ -118,17 +191,29 @@ class ItemListPage extends StatelessWidget {
   }
 
   void _navigateToEachItemPage(BuildContext context, String name, String category, String itemNum, String memo) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => EachItemPage(
-        name: name,
-        category: category,
-        itemNum: itemNum,
-        memo: memo,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EachItemPage(
+          name: name,
+          category: category,
+          itemNum: itemNum,
+          memo: memo,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
+  Future<String?> _getImageUrlFromFirestore(String? imagePath) async {
+    if (imagePath != null && imagePath.isNotEmpty) {
+      Reference ref = FirebaseStorage.instance.ref().child(imagePath);
+      try {
+        final url = await ref.getDownloadURL();
+        return url;
+      } catch (e) {
+        print('画像のURL取得エラー: $e');
+        return null; // 画像のURLがない場合
+      }
+    }
+  }
 }

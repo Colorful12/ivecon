@@ -35,57 +35,156 @@ class _AddOneItemPageState extends State<AddOneItemPage>{
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/itemlist');
+              Navigator.pushNamed(context, '/pages/itemlist');
             },
             icon: Icon(Icons.close),
           ),
         ],
+        backgroundColor: Color(0xffC5C7D3),
       ),
       backgroundColor: Color.fromARGB(255, 241, 243, 245),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'アイテム名'),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            TextFormField(
-              controller: itemNumController,
-              decoration: InputDecoration(labelText: '在庫数'),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            TextFormField(
-              controller: categoryController,
-              decoration: InputDecoration(labelText: 'カテゴリ'),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            TextFormField(
-              controller: memoController,
-              decoration: InputDecoration(labelText: 'メモ'),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _pickImage();
-              },
-              child: Text('画像を選択'),
-            ),
-            ElevatedButton(
-              onPressed: _uploadAndSave, 
-              child: Text('登録する'),
-            ),
-            _getImageWidget(),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 400), 
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'アイテム名',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent), // 枠線を透明にする
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 105, 124, 234)), // 枠線を透明にする
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                controller: itemNumController,
+                decoration: InputDecoration(
+                  labelText: '在庫数',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent), // 枠線を透明にする
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 105, 124, 234)), // 枠線を透明にする
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                controller: categoryController,
+                decoration: InputDecoration(
+                  labelText: 'カテゴリ',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent), // 枠線を透明にする
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 105, 124, 234)), // 枠線を透明にする
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                controller: memoController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'メモ',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.transparent), // 枠線を透明にする
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 105, 124, 234)), // 枠線を透明にする
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                onChanged: (value) {
+                  setState(() {});
+                },
+              ),
+              SizedBox(height: 25),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _pickImage();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white, // 背景色を白に設定
+                    onPrimary: Color(0xff2C2C2C), // 文字色を黒に設定
+                  ),
+                  child: Text('画像を選択'),
+                ),
+              ),
+              SizedBox(height: 70),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 50), // ボタンとボトムの間隔を調整
+                  child: ElevatedButton(
+                    onPressed: _uploadAndSave,
+                    style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 25), // ボタンのサイズを調整
+                    primary: Color(0xFFE65A71), // 背景色を指定
+                    onPrimary: Color(0xFFF7F7F7), // 文字色を指定
+                    shape: RoundedRectangleBorder( // 角丸の形状を指定
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                    child: Text('登録する'),
+                  ),
+                ),
+              ),
+              _getImageWidget(),
+            ],
+          ),
         ),
       ),
     );

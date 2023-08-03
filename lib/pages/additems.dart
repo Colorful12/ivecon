@@ -9,7 +9,7 @@ class AddItemPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 241, 243, 245),
       body: const Center(
-          child: Text('一括増減', style: TextStyle(fontSize: 32.0))),
+          child: Text('予備ページ', style: TextStyle(fontSize: 32.0))),
     );
   }
 }
