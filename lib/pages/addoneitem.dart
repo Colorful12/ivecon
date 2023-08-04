@@ -171,11 +171,11 @@ class _AddOneItemPageState extends State<AddOneItemPage>{
                   child: ElevatedButton(
                     onPressed: _uploadAndSave,
                     style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 25), // ボタンのサイズを調整
-                    primary: Color(0xFFE65A71), // 背景色を指定
-                    onPrimary: Color(0xFFF7F7F7), // 文字色を指定
-                    shape: RoundedRectangleBorder( // 角丸の形状を指定
-                      borderRadius: BorderRadius.circular(30),
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 25), // ボタンのサイズを調整
+                      primary: Color(0xFFE65A71), // 背景色を指定
+                      onPrimary: Color(0xFFF7F7F7), // 文字色を指定
+                      shape: RoundedRectangleBorder( // 角丸の形状を指定
+                        borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                     child: Text('登録する'),
